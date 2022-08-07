@@ -1,0 +1,9 @@
+{
+  "compilerOptions": {
+    "baseUrl": "src"
+  },
+  "include": ["src"],
+  "editor.codeActionsOnSave": {
+    "source.organizeImports": true
+  }
+}
