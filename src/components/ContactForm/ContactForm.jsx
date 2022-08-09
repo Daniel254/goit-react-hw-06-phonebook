@@ -1,12 +1,17 @@
 import { Form, Formik } from 'formik';
 import { nanoid } from 'nanoid';
-import PropTypes from 'prop-types';
+import { useDispatch, useSelector } from 'react-redux';
 import * as yup from 'yup';
 
 import Section from 'components/Section';
 import { Button, Error, Input, LabelName } from './ContactForm.styled';
 
-function ContactForm({ addContact }) {
+import * as contactsActions from 'redux/cotactsSlice';
+import sanitizeString from 'utils/sanitizeString';
+
+function ContactForm() {
+  const dispatch = useDispatch();
+  const contactList = useSelector(state => state.contacts.items);
   const schema = yup.object().shape({
     name: yup
       .string()
@@ -26,6 +31,19 @@ function ContactForm({ addContact }) {
         }
       ),
   });
+
+  const checkExistingContactName = newContact =>
+    contactList.filter(
+      contact =>
+        sanitizeString(contact.name) === sanitizeString(newContact.name)
+    ).length > 0;
+
+  const addContact = newContact => {
+    if (checkExistingContactName(newContact)) {
+      throw new Error(`${newContact.name} is already in contacts`);
+    }
+    dispatch(contactsActions.add({ contacts: [newContact] }));
+  };
 
   const submitHandler = (values, actions) => {
     try {
@@ -69,9 +87,5 @@ function ContactForm({ addContact }) {
     </Section>
   );
 }
-
-ContactForm.propTypes = {
-  addContact: PropTypes.func.isRequired,
-};
 
 export default ContactForm;

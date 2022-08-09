@@ -1,7 +1,15 @@
-import PropTypes from 'prop-types';
+import { useDispatch, useSelector } from 'react-redux';
 import { Input } from './SearchContact.styled';
 
-function SearchContact({ filterHandler, filterString }) {
+import * as contactsActions from 'redux/cotactsSlice';
+import sanitizeString from 'utils/sanitizeString';
+
+function SearchContact() {
+  const dispatch = useDispatch();
+  const filter = useSelector(state => state.contacts.filter);
+  const filterHandler = ({ target: { value } }) => {
+    dispatch(contactsActions.setFilter({ filter: sanitizeString(value) }));
+  };
   return (
     <div>
       Find contact by name
@@ -10,12 +18,10 @@ function SearchContact({ filterHandler, filterString }) {
         type="text"
         autoComplete="off"
         onChange={filterHandler}
-        value={filterString}
+        value={filter}
       />
     </div>
   );
 }
-
-SearchContact.propTypes = { filterHandler: PropTypes.func.isRequired };
 
 export default SearchContact;
