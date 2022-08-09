@@ -1,14 +1,36 @@
 import PropTypes from 'prop-types';
+import { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 
 import Notification from 'components/Notification';
 import { DeleteBtn, List } from './ContactList.styled';
 
+import { LS_CONTACT_LIST } from 'constants/lsConstants';
+import * as contactsActions from 'redux/cotactsSlice';
 import sanitizeString from 'utils/sanitizeString';
 
-function ContactList({ contactList, query, deleteContact }) {
+function ContactList() {
+  const dispatch = useDispatch();
+  const contactList = useSelector(state => state.contacts.items);
+  const filter = useSelector(state => state.contacts.filter);
   const filteredContactList = contactList.filter(item =>
-    sanitizeString(item.name).includes(query)
+    sanitizeString(item.name).includes(filter)
   );
+
+  const deleteContactHandler = id => {
+    dispatch(contactsActions.remove({ id }));
+  };
+
+  useEffect(() => {
+    const contactList = JSON.parse(localStorage.getItem(LS_CONTACT_LIST));
+    if (contactList?.length) {
+      dispatch(contactsActions.add({ contacts: contactList }));
+    }
+  }, [dispatch]);
+
+  useEffect(() => {
+    localStorage.setItem(LS_CONTACT_LIST, JSON.stringify(contactList));
+  }, [contactList]);
 
   return (
     <>
@@ -17,7 +39,9 @@ function ContactList({ contactList, query, deleteContact }) {
           {filteredContactList.map(({ id, name, number }) => (
             <li key={id}>
               {name}: {number}
-              <DeleteBtn onClick={() => deleteContact(id)}>Delete</DeleteBtn>
+              <DeleteBtn onClick={() => deleteContactHandler(id)}>
+                Delete
+              </DeleteBtn>
             </li>
           ))}
         </List>
@@ -39,7 +63,6 @@ ContactList.propTypes = {
     })
   ),
   filter: PropTypes.string,
-  deleteContact: PropTypes.func.isRequired,
 };
 
 export default ContactList;
