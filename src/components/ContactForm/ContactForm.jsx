@@ -4,14 +4,14 @@ import { useDispatch, useSelector } from 'react-redux';
 import * as yup from 'yup';
 
 import Section from 'components/Section';
-import { Button, Error, Input, LabelName } from './ContactForm.styled';
+import { Button, Input, InputError, LabelName } from './ContactForm.styled';
 
-import * as contactsActions from 'redux/cotactsSlice';
+import { addContacts, getContacts } from 'redux/cotacts';
 import sanitizeString from 'utils/sanitizeString';
 
 function ContactForm() {
   const dispatch = useDispatch();
-  const contactList = useSelector(state => state.contacts.items);
+  const contactList = useSelector(getContacts);
   const schema = yup.object().shape({
     name: yup
       .string()
@@ -33,26 +33,28 @@ function ContactForm() {
   });
 
   const checkExistingContactName = newContact =>
-    contactList.filter(
+    contactList.find(
       contact =>
         sanitizeString(contact.name) === sanitizeString(newContact.name)
-    ).length > 0;
+    );
 
-  const addContact = newContact => {
-    if (checkExistingContactName(newContact)) {
-      throw new Error(`${newContact.name} is already in contacts`);
-    }
-    dispatch(contactsActions.add({ contacts: [newContact] }));
-  };
-
-  const submitHandler = (values, actions) => {
+  const submitHandler = (values, formik) => {
     try {
-      addContact({
-        id: nanoid(),
-        name: values.name,
-        number: values.number,
-      });
-      actions.resetForm();
+      if (checkExistingContactName(values)) {
+        throw new Error(`${values.name} is already in contacts`);
+      }
+      dispatch(
+        addContacts({
+          contacts: [
+            {
+              id: nanoid(),
+              name: values.name,
+              number: values.number,
+            },
+          ],
+        })
+      );
+      formik.resetForm();
     } catch (error) {
       alert(error);
     }
@@ -73,13 +75,13 @@ function ContactForm() {
             Name
             <Input name="name" type="text" />
           </LabelName>
-          <Error name="name" component="p" />
+          <InputError name="name" component="p" />
 
           <LabelName>
             Number
             <Input name="number" type="tel" />
           </LabelName>
-          <Error name="number" component="p" />
+          <InputError name="number" component="p" />
 
           <Button type="submit">Add contact</Button>
         </Form>

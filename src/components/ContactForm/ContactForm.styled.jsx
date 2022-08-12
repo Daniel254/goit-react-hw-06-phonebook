@@ -1,5 +1,5 @@
+import { ErrorMessage, Field } from 'formik';
 import styled from 'styled-components';
-import { Field, ErrorMessage } from 'formik';
 
 export const LabelName = styled.label`
   display: block;
@@ -34,7 +34,7 @@ export const Button = styled.button`
   }
 `;
 
-export const Error = styled(ErrorMessage)`
+export const InputError = styled(ErrorMessage)`
   font-size: 12px;
   color: #bc0000;
   height: auto;

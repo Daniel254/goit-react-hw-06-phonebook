@@ -1,36 +1,34 @@
 import PropTypes from 'prop-types';
-import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 import Notification from 'components/Notification';
 import { DeleteBtn, List } from './ContactList.styled';
 
-import { LS_CONTACT_LIST } from 'constants/lsConstants';
-import * as contactsActions from 'redux/cotactsSlice';
+import { getContacts, getContactsFilter, removeContact } from 'redux/cotacts';
 import sanitizeString from 'utils/sanitizeString';
 
 function ContactList() {
   const dispatch = useDispatch();
-  const contactList = useSelector(state => state.contacts.items);
-  const filter = useSelector(state => state.contacts.filter);
+  const contactList = useSelector(getContacts);
+  const filter = useSelector(getContactsFilter);
   const filteredContactList = contactList.filter(item =>
     sanitizeString(item.name).includes(filter)
   );
 
   const deleteContactHandler = id => {
-    dispatch(contactsActions.remove({ id }));
+    dispatch(removeContact({ id }));
   };
 
-  useEffect(() => {
-    const contactList = JSON.parse(localStorage.getItem(LS_CONTACT_LIST));
-    if (contactList?.length) {
-      dispatch(contactsActions.add({ contacts: contactList }));
-    }
-  }, [dispatch]);
+  // useEffect(() => {
+  //   const contactList = JSON.parse(localStorage.getItem(LS_CONTACT_LIST));
+  //   if (contactList?.length) {
+  //     dispatch(addContacts({ contacts: contactList }));
+  //   }
+  // }, [dispatch]);
 
-  useEffect(() => {
-    localStorage.setItem(LS_CONTACT_LIST, JSON.stringify(contactList));
-  }, [contactList]);
+  // useEffect(() => {
+  //   localStorage.setItem(LS_CONTACT_LIST, JSON.stringify(contactList));
+  // }, [contactList]);
 
   return (
     <>

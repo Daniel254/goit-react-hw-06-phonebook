@@ -1,14 +1,14 @@
 import { useDispatch, useSelector } from 'react-redux';
 import { Input } from './SearchContact.styled';
 
-import * as contactsActions from 'redux/cotactsSlice';
+import { getContactsFilter, setContactFilter } from 'redux/cotacts';
 import sanitizeString from 'utils/sanitizeString';
 
 function SearchContact() {
   const dispatch = useDispatch();
-  const filter = useSelector(state => state.contacts.filter);
+  const filter = useSelector(getContactsFilter);
   const filterHandler = ({ target: { value } }) => {
-    dispatch(contactsActions.setFilter({ filter: sanitizeString(value) }));
+    dispatch(setContactFilter({ filter: sanitizeString(value) }));
   };
   return (
     <div>
