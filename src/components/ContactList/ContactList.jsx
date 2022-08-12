@@ -19,17 +19,6 @@ function ContactList() {
     dispatch(removeContact({ id }));
   };
 
-  // useEffect(() => {
-  //   const contactList = JSON.parse(localStorage.getItem(LS_CONTACT_LIST));
-  //   if (contactList?.length) {
-  //     dispatch(addContacts({ contacts: contactList }));
-  //   }
-  // }, [dispatch]);
-
-  // useEffect(() => {
-  //   localStorage.setItem(LS_CONTACT_LIST, JSON.stringify(contactList));
-  // }, [contactList]);
-
   return (
     <>
       {filteredContactList.length > 0 ? (
